@@ -6,7 +6,7 @@ export USER=$(whoami)
 
 iter_num=$1
 
-recipe_name="AIR_iter_${iter_num}"
+recipe_name="AIR_loop_b_${iter_num}"
 
 cp -a ~/kaldi/egs/timit ~/kaldi/egs/$recipe_name
 
