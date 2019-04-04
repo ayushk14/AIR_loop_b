@@ -20,8 +20,7 @@ train_uttids.remove('')
 train_uttids.sort()
 
 for item in new_uttids:
-    if item not in train_uttids:
-        train_uttids.append(item)
+    train_uttids.append(item)
 
 train_uttids.sort()
 
