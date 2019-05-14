@@ -10,9 +10,10 @@ Recipe_dir = sys.argv[2]
 data_files = sys.argv[3]
 dict_files = sys.argv[4]
 
-# This list will be generated from the csv file above
-spk_list = ['FA','FB','MA','MB','MC']
-spk_list.sort()
+# Indiividual speaker list
+train_spk_list = []
+test_spk_list = []
+bulk_spk_list = []
 
 # Experiment type either 'PER' or 'WER'
 experiment_type = 'PER'
@@ -33,6 +34,13 @@ for x in split_cat:
     temp_list = []
     temp_list_phoneme = []
     for item in ref_file_content:
+        if x == 'train':
+            train_spk_list.append(item[:2])
+        elif x == 'test':
+            test_spk_list.append(item[:2])
+        else:
+            bulk_spk_list.append(item[:2])
+
         prefix = item[-1]
         file_name = item[:6]
         folder_name = item[7:-2]
@@ -61,6 +69,8 @@ for x in split_cat:
 
             line = line.replace("IE","I E")
             line = line.replace("IPA","I PA")
+            line = line.replace("VAl","VA")
+            line = line.replace("LAll","LAl")
             if line != s_f_content[-1]:
                 temp_str = temp_str + line + ' '
                 temp_str_phoneme = temp_str_phoneme + line + ' '
@@ -90,6 +100,14 @@ for x in split_cat:
 
     ref_file.close()
 
+train_spk_list = list(set(train_spk_list))
+train_spk_list.sort()
+
+test_spk_list = list(set(test_spk_list))
+test_spk_list.sort()
+
+bulk_spk_list = list(set(bulk_spk_list))
+bulk_spk_list.sort()
 
 # # utt2spk
 for x in split_cat:
@@ -113,6 +131,13 @@ for x in split_cat:
 
 # # spk2utt
 for x in split_cat:
+    if x == 'dev':
+        spk_list = bulk_spk_list
+    elif x == 'train':
+        spk_list = train_spk_list
+    else:
+        spk_list = test_spk_list
+
     ref_file = open(Recipe_dir+'/'+data_files+'/'+x+'.utt2spk','r')
     ref_file_content = ref_file.read().split('\n')
     ref_file_content.remove('')
@@ -140,14 +165,21 @@ for x in split_cat:
 
 
 # # spk2gender
-temp_list = []
-for spk in spk_list:
-    gender = spk[0].lower()
-    temp_str = spk+' '+gender+'\n'
-    temp_list.append(temp_str)
-temp_list.sort()
-
 for x in split_cat:
+    if x == 'dev':
+        spk_list = bulk_spk_list
+    elif x == 'train':
+        spk_list = train_spk_list
+    else:
+        spk_list = test_spk_list
+
+    temp_list = []
+    for spk in spk_list:
+        gender = spk[0].lower()
+        temp_str = spk+' '+gender+'\n'
+        temp_list.append(temp_str)
+    temp_list.sort()
+
     file = open(Recipe_dir+'/'+data_files+'/'+x+'.spk2gender','w')
     for item in temp_list:
         file.write(item)
@@ -220,7 +252,6 @@ for x in split_cat:
     ref_file_content = ref_file.read().split('\n')
     ref_file_content = list(filter(lambda a: a != '', ref_file_content))
 
-    phones_list = []
     for item in ref_file_content:
         uttid, utt = item.split(';')
 

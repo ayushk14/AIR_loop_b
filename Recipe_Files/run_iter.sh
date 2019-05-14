@@ -37,7 +37,7 @@ delta_num=$1
 
 actual_delta_num=$delta_num+1
 
-exp_description="Seed Model 1 hour + $actual_delta_num delta blocks"
+exp_description="Loop B: Seed Model 1 hour + $delta_num delta blocks"
 
 echo ============================================================================
 echo "                Data & Lexicon & Language Preparation                     "
@@ -255,7 +255,7 @@ echo ===========================================================================
 echo "                    Doing Force Alignment (SGMM2)                         "
 echo ============================================================================
 
-steps_fa/align_fmllr.sh --nj "$train_nj" --cmd "$train_cmd" \
+steps_fa/align_fmllr.sh --nj "$train_nj" --retry_beam 250 --cmd "$train_cmd" \
  data/dev data/lang exp/tri3 exp/tri3_ali_fa
 : <<COMMENT
 echo ============================================================================
